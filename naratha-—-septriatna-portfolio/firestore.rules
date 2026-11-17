@@ -1,0 +1,291 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Reusable Hardened Helpers ---
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && (
+          request.auth.token.email == 'naraakarya@gmail.com'
+          || exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        );
+    }
+
+    function isValidCategory(cat) {
+      return cat in ['Arsitektur', 'Konstruksi Lapangan', 'Perencanaan RAB'];
+    }
+
+    function isValidDemoType(demoType) {
+      return demoType in ['finance', 'warehouse', 'water', 'rab', 'custom'];
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll([
+          'id', 'title', 'category', 'year', 'location', 'client',
+          'area', 'budgetSummary', 'summary', 'deliverables',
+          'imageUrl', 'featured', 'ownerUid', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'title', 'category', 'year', 'location', 'client',
+          'area', 'budgetSummary', 'summary', 'deliverables',
+          'imageUrl', 'featured', 'ownerUid', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 160
+        && data.category is string && data.category.size() <= 40 && isValidCategory(data.category)
+        && data.year is string && data.year.size() >= 1 && data.year.size() <= 20
+        && data.location is string && data.location.size() >= 1 && data.location.size() <= 120
+        && data.client is string && data.client.size() >= 1 && data.client.size() <= 120
+        && data.area is string && data.area.size() >= 1 && data.area.size() <= 120
+        && data.budgetSummary is string && data.budgetSummary.size() >= 1 && data.budgetSummary.size() <= 120
+        && data.summary is string && data.summary.size() >= 1 && data.summary.size() <= 2000
+        && data.deliverables is list && data.deliverables.size() >= 1 && data.deliverables.size() <= 12
+        && data.deliverables[0] is string && data.deliverables[0].size() <= 200
+        && data.imageUrl is string && data.imageUrl.size() <= 500000
+        && data.featured is bool
+        && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSaaSProduct(data) {
+      return data.keys().hasAll([
+          'id', 'name', 'domainLabel', 'tagline', 'description',
+          'priceLabel', 'billingPeriod', 'features', 'demoType',
+          'ownerUid', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'name', 'domainLabel', 'tagline', 'description',
+          'priceLabel', 'billingPeriod', 'features', 'demoType',
+          'ownerUid', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 120
+        && data.domainLabel is string && data.domainLabel.size() >= 1 && data.domainLabel.size() <= 100
+        && data.tagline is string && data.tagline.size() >= 1 && data.tagline.size() <= 240
+        && data.description is string && data.description.size() >= 1 && data.description.size() <= 1200
+        && data.priceLabel is string && data.priceLabel.size() >= 1 && data.priceLabel.size() <= 60
+        && data.billingPeriod is string && data.billingPeriod.size() >= 1 && data.billingPeriod.size() <= 80
+        && data.features is list && data.features.size() >= 1 && data.features.size() <= 8
+        && data.features[0] is string && data.features[0].size() <= 200
+        && data.demoType is string && data.demoType.size() <= 30 && isValidDemoType(data.demoType)
+        && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPoem(data) {
+      return data.keys().hasAll([
+          'id', 'title', 'excerpt', 'stanzas', 'theme',
+          'writtenYear', 'ownerUid', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'title', 'excerpt', 'stanzas', 'theme',
+          'writtenYear', 'authorNote', 'ownerUid', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 160
+        && data.excerpt is string && data.excerpt.size() >= 1 && data.excerpt.size() <= 500
+        && data.stanzas is list && data.stanzas.size() >= 1 && data.stanzas.size() <= 100
+        && data.stanzas[0] is string && data.stanzas[0].size() <= 300
+        && data.theme is string && data.theme.size() >= 1 && data.theme.size() <= 80
+        && data.writtenYear is string && data.writtenYear.size() >= 1 && data.writtenYear.size() <= 20
+        && (!('authorNote' in data) || (data.authorNote is string && data.authorNote.size() <= 300))
+        && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSiteProfile(data) {
+      return data.keys().hasAll([
+          'heroKicker', 'heroTitle', 'heroSubtitle', 'heroImageUrl',
+          'heroImageCaption', 'heroImageLocation', 'aboutHeading', 'aboutBio',
+          'contactEmail', 'pillar1Title', 'pillar1Desc', 'pillar2Title',
+          'pillar2Desc', 'pillar3Title', 'pillar3Desc', 'ownerUid', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'heroKicker', 'heroTitle', 'heroSubtitle', 'heroImageUrl',
+          'heroImageCaption', 'heroImageLocation', 'aboutHeading', 'aboutBio',
+          'contactEmail', 'pillar1Title', 'pillar1Desc', 'pillar2Title',
+          'pillar2Desc', 'pillar3Title', 'pillar3Desc', 'ownerUid', 'updatedAt'
+        ])
+        && data.heroKicker is string && data.heroKicker.size() >= 1 && data.heroKicker.size() <= 120
+        && data.heroTitle is string && data.heroTitle.size() >= 1 && data.heroTitle.size() <= 160
+        && data.heroSubtitle is string && data.heroSubtitle.size() >= 1 && data.heroSubtitle.size() <= 1000
+        && data.heroImageUrl is string && data.heroImageUrl.size() <= 500000
+        && data.heroImageCaption is string && data.heroImageCaption.size() >= 1 && data.heroImageCaption.size() <= 120
+        && data.heroImageLocation is string && data.heroImageLocation.size() >= 1 && data.heroImageLocation.size() <= 120
+        && data.aboutHeading is string && data.aboutHeading.size() >= 1 && data.aboutHeading.size() <= 160
+        && data.aboutBio is string && data.aboutBio.size() >= 1 && data.aboutBio.size() <= 1500
+        && data.contactEmail is string && data.contactEmail.size() >= 1 && data.contactEmail.size() <= 160
+        && data.pillar1Title is string && data.pillar1Title.size() >= 1 && data.pillar1Title.size() <= 80
+        && data.pillar1Desc is string && data.pillar1Desc.size() >= 1 && data.pillar1Desc.size() <= 400
+        && data.pillar2Title is string && data.pillar2Title.size() >= 1 && data.pillar2Title.size() <= 80
+        && data.pillar2Desc is string && data.pillar2Desc.size() >= 1 && data.pillar2Desc.size() <= 400
+        && data.pillar3Title is string && data.pillar3Title.size() >= 1 && data.pillar3Title.size() <= 80
+        && data.pillar3Desc is string && data.pillar3Desc.size() >= 1 && data.pillar3Desc.size() <= 400
+        && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSiteSetting(data) {
+      return data.keys().hasAll(['initialized', 'ownerUid', 'updatedAt'])
+        && data.keys().hasOnly(['initialized', 'ownerUid', 'updatedAt'])
+        && data.initialized is bool
+        && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+        && data.updatedAt is timestamp;
+    }
+
+    // --- Collection Rules ---
+
+    // Public portfolio projects: anyone can read, ONLY verified Admin can write
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId);
+      allow list: if true;
+
+      allow create: if isAdmin()
+        && isValidId(projectId)
+        && isValidProject(incoming())
+        && incoming().id == projectId
+        && incoming().ownerUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isAdmin()
+        && isValidId(projectId)
+        && isValidProject(incoming())
+        && incoming().id == existing().id
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'category', 'year', 'location', 'client',
+          'area', 'budgetSummary', 'summary', 'deliverables',
+          'imageUrl', 'featured', 'updatedAt'
+        ]);
+
+      allow delete: if isAdmin() && isValidId(projectId);
+    }
+
+    // Public SaaS products catalog: anyone can read, ONLY verified Admin can write
+    match /saasProducts/{productId} {
+      allow get: if isValidId(productId);
+      allow list: if true;
+
+      allow create: if isAdmin()
+        && isValidId(productId)
+        && isValidSaaSProduct(incoming())
+        && incoming().id == productId
+        && incoming().ownerUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isAdmin()
+        && isValidId(productId)
+        && isValidSaaSProduct(incoming())
+        && incoming().id == existing().id
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'domainLabel', 'tagline', 'description',
+          'priceLabel', 'billingPeriod', 'features', 'demoType', 'updatedAt'
+        ]);
+
+      allow delete: if isAdmin() && isValidId(productId);
+    }
+
+    // Public poetry collection: anyone can read, ONLY verified Admin can write
+    match /poems/{poemId} {
+      allow get: if isValidId(poemId);
+      allow list: if true;
+
+      allow create: if isAdmin()
+        && isValidId(poemId)
+        && isValidPoem(incoming())
+        && incoming().id == poemId
+        && incoming().ownerUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isAdmin()
+        && isValidId(poemId)
+        && isValidPoem(incoming())
+        && incoming().id == existing().id
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'excerpt', 'stanzas', 'theme',
+          'writtenYear', 'authorNote', 'updatedAt'
+        ]);
+
+      allow delete: if isAdmin() && isValidId(poemId);
+    }
+
+    // Public site profile (Hero & About): anyone can read, ONLY verified Admin can write
+    match /siteProfile/{profileId} {
+      allow get: if isValidId(profileId);
+      allow list: if false;
+
+      allow create, update: if isAdmin()
+        && isValidId(profileId)
+        && isValidSiteProfile(incoming())
+        && incoming().ownerUid == request.auth.uid
+        && incoming().updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
+    // Site initialization status: public read, Admin write
+    match /settings/{settingId} {
+      allow get: if isValidId(settingId);
+      allow list: if false;
+
+      allow create, update: if isAdmin()
+        && isValidId(settingId)
+        && isValidSiteSetting(incoming())
+        && incoming().ownerUid == request.auth.uid
+        && incoming().updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
+    // Admin PII isolation: self-read only for verified user, no list, no client escalation
+    match /admins/{userId} {
+      allow get: if isSignedIn()
+        && isValidId(userId)
+        && request.auth.uid == userId
+        && request.auth.token.email_verified == true;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    // Connection test path
+    match /test/connection {
+      allow get: if true;
+      allow list, write: if false;
+    }
+  }
+}

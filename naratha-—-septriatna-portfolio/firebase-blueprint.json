@@ -1,0 +1,449 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Proyek arsitektur, konstruksi lapangan, atau perencanaan RAB dalam portofolio NARATHA.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Arsitektur",
+            "Konstruksi Lapangan",
+            "Perencanaan RAB"
+          ],
+          "maxLength": 40
+        },
+        "year": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "client": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "area": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "budgetSummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "deliverables": {
+          "type": "array",
+          "description": "Daftar hasil pekerjaan proyek (maksimal 12 item)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 500000
+        },
+        "featured": {
+          "type": "boolean"
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "category",
+        "year",
+        "location",
+        "client",
+        "area",
+        "budgetSummary",
+        "summary",
+        "deliverables",
+        "imageUrl",
+        "featured",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SaaSProduct": {
+      "title": "SaaSProduct",
+      "description": "Produk aplikasi dan SaaS bisnis dalam etalase NARATHA.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "domainLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "priceLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "billingPeriod": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "features": {
+          "type": "array",
+          "description": "Daftar fitur unggulan aplikasi (maksimal 8 item)."
+        },
+        "demoType": {
+          "type": "string",
+          "enum": [
+            "finance",
+            "warehouse",
+            "water",
+            "rab",
+            "custom"
+          ],
+          "maxLength": 30
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "domainLabel",
+        "tagline",
+        "description",
+        "priceLabel",
+        "billingPeriod",
+        "features",
+        "demoType",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Poem": {
+      "title": "Poem",
+      "description": "Karya sastra puisi pribadi dalam Ruang Puisi NARATHA.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "stanzas": {
+          "type": "array",
+          "description": "Baris-baris bait puisi (maksimal 100 baris)."
+        },
+        "theme": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "writtenYear": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        },
+        "authorNote": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "excerpt",
+        "stanzas",
+        "theme",
+        "writtenYear",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SiteProfile": {
+      "title": "SiteProfile",
+      "description": "Teks Hero, gambar sampul, deskripsi Tentang Saya, dan kontak publik NARATHA.",
+      "type": "object",
+      "properties": {
+        "heroKicker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "heroTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "heroSubtitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "heroImageUrl": {
+          "type": "string",
+          "maxLength": 500000
+        },
+        "heroImageCaption": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "heroImageLocation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "aboutHeading": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "aboutBio": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "contactEmail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "pillar1Title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "pillar1Desc": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "pillar2Title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "pillar2Desc": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "pillar3Title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "pillar3Desc": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "heroKicker",
+        "heroTitle",
+        "heroSubtitle",
+        "heroImageUrl",
+        "heroImageCaption",
+        "heroImageLocation",
+        "aboutHeading",
+        "aboutBio",
+        "contactEmail",
+        "pillar1Title",
+        "pillar1Desc",
+        "pillar2Title",
+        "pillar2Desc",
+        "pillar3Title",
+        "pillar3Desc",
+        "ownerUid",
+        "updatedAt"
+      ]
+    },
+    "SiteSetting": {
+      "title": "SiteSetting",
+      "description": "Status inisialisasi konten awal portofolio NARATHA.",
+      "type": "object",
+      "properties": {
+        "initialized": {
+          "type": "boolean"
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "initialized",
+        "ownerUid",
+        "updatedAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Daftar administrator terverifikasi (akses baca/tulis privat).",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "admin"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "email",
+        "role",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": {
+        "$ref": "#/entities/Project"
+      },
+      "description": "Koleksi proyek arsitektur, konstruksi, dan RAB (baca publik, tulis Admin)."
+    },
+    "/saasProducts/{productId}": {
+      "schema": {
+        "$ref": "#/entities/SaaSProduct"
+      },
+      "description": "Koleksi produk aplikasi & SaaS bisnis (baca publik, tulis Admin)."
+    },
+    "/poems/{poemId}": {
+      "schema": {
+        "$ref": "#/entities/Poem"
+      },
+      "description": "Koleksi puisi pribadi Ruang Puisi (baca publik, tulis Admin)."
+    },
+    "/siteProfile/{profileId}": {
+      "schema": {
+        "$ref": "#/entities/SiteProfile"
+      },
+      "description": "Konfigurasi teks Hero, Tentang Saya, dan foto utama (baca publik, tulis Admin)."
+    },
+    "/settings/{settingId}": {
+      "schema": {
+        "$ref": "#/entities/SiteSetting"
+      },
+      "description": "Status inisialisasi konten awal portofolio."
+    },
+    "/admins/{userId}": {
+      "schema": {
+        "$ref": "#/entities/AdminUser"
+      },
+      "description": "Dokumen peran admin terisolasi (PII)."
+    }
+  }
+}
